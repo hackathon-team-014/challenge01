@@ -7,9 +7,19 @@ from flask import jsonify
 
 app = Flask(__name__)
 
-@app.route('/')
-def hello_world():
+
+
+@app.route('/', methods=['GET'])
+def welcome():
     return 'Welcome to Forte-Team endpoint.'
+
+@app.route('/api/status', methods=['GET'])
+def status():
+    data = {}
+    try:
+        return jsonify(insert=False, fetch=False, delete=False, list=False), 200
+    except Exception as e:
+        return jsonify(code=0, message=e), 500
 
 if __name__ == '__main__':
     # Used for running locally
