@@ -41,11 +41,11 @@ def delete(id):
     try:
         gds = google_datastore.GoogleDataStore()
         if len(gds.fetch(id)) == 0:
-            return 'Capital record not found', 404
+            return jsonify(code=404, message='Capital record not found'), 404
     
         gds.delete(id)
     except Exception as e:
-        return jsonify(code=0, message=e), 500
+        return jsonify(code=500, message=e), 500
 
     return 'Capital object delete status', 200
 
@@ -53,7 +53,11 @@ def delete(id):
 def fetch(id):
     try:
         gds = google_datastore.GoogleDataStore()
-        return jsonify(gds.fetch(id)), 200
+        result = gds.fetch(id)
+        if len(result) == 0:
+            return jsonify(code=404, message='Capital record not found'), 404
+
+        return jsonify(result), 200
     except Exception as e:
         return jsonify(code=0, message=e), 500
 
