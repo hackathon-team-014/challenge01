@@ -19,7 +19,7 @@ def welcome():
 def status():
     data = {}
     try:
-        return jsonify(insert=True, fetch=True, delete=True, list=True, storage=True, pubsub=False, query=True, search=False), 200
+        return jsonify(insert=True, fetch=True, delete=True, list=True, storage=True, pubsub=False, query=True, search=True), 200
     except Exception as e:
         return jsonify(code=500, message='Unexpected error'), 500
         
@@ -149,8 +149,8 @@ def fetch_all():
 
         if 'query' in request.args:
             result = gds.query(request.args.get('query'))
-        # elif 'search' in request.args:
-        #     result = gds.search(request.args.get('search'))
+        elif 'search' in request.args:
+             result = gds.search(request.args.get('search'))
         else:
             result = gds.fetch_all()
         

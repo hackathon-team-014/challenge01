@@ -39,7 +39,7 @@ class GoogleDataStore:
         for entity in list(query.fetch()):
             if 'location' in entity :
                 location = dict()
-                location['latitude'] = latitude=entity['location'].latitude
+                location['latitude'] = entity['location'].latitude
                 location['longitude'] = entity['location'].longitude
                 print location
                 entity['location'] = location
@@ -60,7 +60,7 @@ class GoogleDataStore:
         for entity in list(query.fetch()):
             if 'location' in entity :
                 location = dict()
-                location['latitude'] = latitude=entity['location'].latitude
+                location['latitude'] = entity['location'].latitude
                 location['longitude'] = entity['location'].longitude
                 print location
                 entity['location'] = location
@@ -103,10 +103,33 @@ class GoogleDataStore:
         for entity in list(query.fetch()):
             if 'location' in entity :
                 location = dict()
-                location['latitude'] = latitude=entity['location'].latitude
+                location['latitude'] = entity['location'].latitude
                 location['longitude'] = entity['location'].longitude
                 print location
                 entity['location'] = location
             result.append(dict(entity))
+
+        return result
+        
+    def search(self, filter):
+        result = list()
+
+        #print 'getting key'
+        key = self.ds.key(self.kind)
+
+        print filter
+
+        query = self.ds.query(kind=self.kind)
+  
+        #print 'assembling list'
+        for entity in list(query.fetch()):
+            if 'location' in entity :
+                location = dict()
+                location['latitude'] = entity['location'].latitude
+                location['longitude'] = entity['location'].longitude
+                print location
+                entity['location'] = location
+            if str(entity).find(filter) != -1:
+                result.append(dict(entity))
 
         return result
