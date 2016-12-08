@@ -86,3 +86,27 @@ class GoogleDataStore:
             #entity.key.delete()
 
         return result
+
+    def query(self, filter):
+        result = list()
+
+        #print 'getting key'
+        key = self.ds.key(self.kind)
+
+        print filter
+        query = self.ds.query(kind=self.kind)
+        prop, val = filter.split(':')
+        print prop, val
+        query.add_filter(prop, '=', val)
+
+        #print 'assembling list'
+        for entity in list(query.fetch()):
+            if 'location' in entity :
+                location = dict()
+                location['latitude'] = latitude=entity['location'].latitude
+                location['longitude'] = entity['location'].longitude
+                print location
+                entity['location'] = location
+            result.append(dict(entity))
+
+        return result

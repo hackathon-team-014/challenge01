@@ -19,7 +19,7 @@ def welcome():
 def status():
     data = {}
     try:
-        return jsonify(insert=True, fetch=True, delete=True, list=True, store=True, publish=True, query=False, search=False), 200
+        return jsonify(insert=True, fetch=True, delete=True, list=True, storage=True, pubsub=False, query=True, search=False), 200
     except Exception as e:
         return jsonify(code=500, message='Unexpected error'), 500
         
@@ -144,8 +144,16 @@ def fetch_all():
     try:
         #print 'Creating datastore facade'
         gds = google_datastore.GoogleDataStore()
-        #print 'fetching...'
-        result = gds.fetch_all()
+
+        result = list()
+
+        if 'query' in request.args:
+            result = gds.query(request.args.get('query'))
+        # elif 'search' in request.args:
+        #     result = gds.search(request.args.get('search'))
+        else:
+            result = gds.fetch_all()
+        
         #print result
         j_result = jsonify(result)
         #print j_result
