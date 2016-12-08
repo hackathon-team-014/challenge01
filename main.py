@@ -96,6 +96,7 @@ def store(id):
         return jsonify(code=500, message='Unexpected error'), 500
 
 
+    print 'final return!'
     return 'Successfully stored in GCS', 200
 
 @app.route('/api/capitals/<id>', methods=['PUT'])

@@ -39,16 +39,18 @@ class Storage:
 
         if self.check_bucket(bucket_name) == False:
             self.create_bucket(bucket_name)
+            print 'bucket created!'
 
         bucket = self.gcs.get_bucket(bucket_name)
         blob = Blob(filename, bucket)
 
         try:
             blob.upload_from_string(datastr)
+            print 'blob stored ok'
             return True
         except Exception:
             print ('Error: Cannot upload the file {}'.format(filename))
-        return False
+            return False
 
     def fetch_object_from_gcs(self, bucket_name, fileobject):
 
