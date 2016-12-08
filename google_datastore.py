@@ -64,7 +64,7 @@ class GoogleDataStore:
                 location['longitude'] = entity['location'].longitude
                 print location
                 entity['location'] = location
-            result.append(dict(entity))
+            return dict(entity)
 
         # print result
         return result
