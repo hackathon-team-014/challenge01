@@ -28,20 +28,22 @@ def publish(id):
         my_dump = json.dumps(received_json)
         print my_dump
 
-        pubsub_client = pubsub.Client(project='hackathon-team-014')
-        print 'got a pubsub client!!!'
-        topic_name = received_json['topic']
-        #topic_name = 'hack_test'
+        # projects/the-depot/topic/hack-it 
+        print received_json['topic'].split('/')[1]
+        pubsub_client = pubsub.Client(project=received_json['topic'].split('/')[1])
+
+        print 'got a pubsub client!!!', received_json['topic'].split('/')[3] 
+        topic_name = received_json['topic'].split('/')[3]
         print topic_name
         topic = pubsub_client.topic(topic_name)
         print 'get topic from client!!!!'
 
-        topic_name_list = list()
-        for t in pubsub_client.list_topics():
-            topic_name_list.append(t.name)
+        #topic_name_list = list()
+        #for t in pubsub_client.list_topics():
+            #topic_name_list.append(t.name)
 
-        if topic_name not in topic_name_list:
-            topic.create()
+        #if topic_name not in topic_name_list:
+            #topic.create()
 
         print 'Creating datastore facade'
         gds = google_datastore.GoogleDataStore()
