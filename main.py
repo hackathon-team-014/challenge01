@@ -1,12 +1,10 @@
 from flask import Flask, request
 from flask import jsonify
+from google.cloud import pubsub
 
 import logging
 import json
-import base64
 import google_datastore
-from google.cloud import pubsub
-import base64
 import cloudstorage
 
 app = Flask(__name__)
@@ -19,7 +17,7 @@ def welcome():
 def status():
     data = {}
     try:
-        return jsonify(insert=True, fetch=True, delete=True, list=True, storage=True, pubsub=False, query=True, search=True), 200
+        return jsonify(insert=True, fetch=True, delete=True, list=True, storage=True, pubsub=True, query=True, search=True), 200
     except Exception as e:
         return jsonify(code=500, message='Unexpected error'), 500
         
@@ -30,14 +28,20 @@ def publish(id):
         my_dump = json.dumps(received_json)
         print my_dump
 
-        pubsub_client = pubsub.Client()
+        pubsub_client = pubsub.Client(project='hackathon-team-014')
         print 'got a pubsub client!!!'
-        #topic_name = received_json['topic']
-        topic_name = 'hack_test'
+        topic_name = received_json['topic']
+        #topic_name = 'hack_test'
         print topic_name
         topic = pubsub_client.topic(topic_name)
         print 'get topic from client!!!!'
-        #topic.create()
+
+        topic_name_list = list()
+        for t in pubsub_client.list_topics():
+            topic_name_list.append(t.name)
+
+        if topic_name not in topic_name_list:
+            topic.create()
 
         print 'Creating datastore facade'
         gds = google_datastore.GoogleDataStore()
@@ -45,26 +49,23 @@ def publish(id):
         result = gds.fetch(id)
         print 'got the result:'
         print result
+
         if len(result) == 0:
             return jsonify(code=404, message='Capital record not found'), 404
 
-        res =  str(result)
-        print res
-        #data=result.encode('utf-8')
-        res1 = 'hi'
-        data = base64.b64encode(res1) 
-        data=data.encode('utf-8')
-        print 'encoded result:' 
-        print data  
+        print json.dumps(result)
+        data = json.dumps(result)
+        data = data.encode('utf-8')
 
-        topic.publish(data)
+        message_id = topic.publish(data)
 
+        print('Message {} published.'.format(message_id))
     except Exception as e:
         print e
         return jsonify(code=500, message='Unexpected error'), 500
 
 
-    return jsonify(messageId=id), 'Successfully published to topic', 200
+    return jsonify(messageId=message_id), 'Successfully published to topic', 200
 
         
 @app.route('/api/capitals/<id>/store', methods=['POST'])
@@ -88,7 +89,7 @@ def store(id):
             return jsonify(code=404, message='Capital record not found'), 404
 
         print "Create Bucket...."
-        gcs.store_file_to_gcs(bucket_name, str(result), str(id))
+        gcs.store_file_to_gcs(bucket_name, str(json.dumps(result)), str(id))
         print "Successfully stored in GCS"
 
     except Exception as e:
