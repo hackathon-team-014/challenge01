@@ -66,6 +66,7 @@ class GoogleDataStore:
                 entity['location'] = location
             return dict(entity)
 
+
         # print result
         return result
 
