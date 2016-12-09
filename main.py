@@ -35,6 +35,25 @@ def map():
     return render_template("maps.html", comment= None, results = res)
 
 
+@app.route('/capitals', methods=['GET'])
+def fetch_allUnique():
+    try:
+        #print 'Creating datastore facade'
+        gds = google_datastore.GoogleDataStore()
+
+        result = list()
+        print 'before gds.fetch_allUnique'
+        result = gds.fetch_allunique()
+        print 'after gds.fetch_allUnique'
+        #print result
+        j_result = jsonify(result)
+        #print j_result
+        return render_template('capitals.html', comment= None, results = result)
+    except Exception as e:
+        print e
+        return jsonify(code=500, message='Unexpected error'), 500
+
+
 @app.route('/', methods=['GET'])
 def welcome():
     return 'Welcome to Forte-Team endpoint.'
