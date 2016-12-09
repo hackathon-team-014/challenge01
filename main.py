@@ -23,53 +23,48 @@ def status():
         
 @app.route('/api/capitals/<id>/publish', methods=['POST'])
 def publish(id):
-    try:
-        received_json = request.get_json()
-        my_dump = json.dumps(received_json)
-        print my_dump
+    received_json = request.get_json()
+    my_dump = json.dumps(received_json)
+    print my_dump
 
-        # projects/the-depot/topic/hack-it 
-        print received_json['topic'].split('/')[1]
-        pubsub_client = pubsub.Client(project=received_json['topic'].split('/')[1])
+    # projects/the-depot/topic/hack-it 
+    print received_json['topic'].split('/')[1]
+    pubsub_client = pubsub.Client(project=received_json['topic'].split('/')[1])
 
-        print 'got a pubsub client!!!', received_json['topic'].split('/')[3] 
-        topic_name = received_json['topic'].split('/')[3]
-        print topic_name
-        topic = pubsub_client.topic(topic_name)
-        print 'get topic from client!!!!'
+    print 'got a pubsub client!!!', received_json['topic'].split('/')[3] 
+    topic_name = received_json['topic'].split('/')[3]
+    print topic_name
+    topic = pubsub_client.topic(topic_name)
+    print 'get topic from client!!!!'
 
-        #topic_name_list = list()
-        #for t in pubsub_client.list_topics():
-            #topic_name_list.append(t.name)
+    #topic_name_list = list()
+    #for t in pubsub_client.list_topics():
+        #topic_name_list.append(t.name)
 
-        #if topic_name not in topic_name_list:
-            #topic.create()
+    #if topic_name not in topic_name_list:
+        #topic.create()
 
-        print 'Creating datastore facade'
-        gds = google_datastore.GoogleDataStore()
-        print 'fetching...'
-        result = gds.fetch(id)
-        print 'got the result:'
-        print result
+    # print 'Creating datastore facade'
+    # gds = google_datastore.GoogleDataStore()
+    # print 'fetching...'
+    # result = gds.fetch(id)
+    # print 'got the result:'
+    # print result
+    result = '{}'
 
-        if len(result) == 0:
-            return jsonify(code=404, message='Capital record not found'), 404
+    if result == None:
+        return jsonify(code=404, message='Capital record not found'), 404
 
-        print json.dumps(result)
-        data = json.dumps(result)
-        data = data.encode('utf-8')
+    print json.dumps(result)
+    data = json.dumps(result)
+    data = data.encode('utf-8')
 
-        message_id = topic.publish(data)
+    message_id = topic.publish(data)
 
-        print('Message {} published.'.format(message_id))
-    except Exception as e:
-        print e
-        return jsonify(code=500, message='Unexpected error'), 500
-
-
+    print('Message {} published.'.format(message_id))
     return jsonify(messageId=message_id), 'Successfully published to topic', 200
 
-        
+
 @app.route('/api/capitals/<id>/store', methods=['POST'])
 def store(id):
     try:
@@ -87,7 +82,7 @@ def store(id):
         result = gds.fetch(id)
         print 'got the result:'
         print result
-        if len(result) == 0:
+        if result == None:
             return jsonify(code=404, message='Capital record not found'), 404
 
         print "Create Bucket...."
@@ -111,6 +106,9 @@ def insert(id):
 
         gds = google_datastore.GoogleDataStore()
         gds.insert(id, received_json)
+
+        while (gds.fetch(id) == None):
+            print 'waiting insert to be persisted...'
     except Exception as e:
         return jsonify(code=500, message='Unexpected error'), 500
 
@@ -120,9 +118,12 @@ def insert(id):
 def delete(id):
     try:
         gds = google_datastore.GoogleDataStore()
-        if len(gds.fetch(id)) == 0:
+        if gds.fetch(id) == None:
             return jsonify(code=404, message='Capital record not found'), 404
         gds.delete(id)
+
+        while (gds.fetch(id) != None):
+            print 'waiting delete to be persisted...'
     except Exception as e:
         return jsonify(code=500, message=e), 500
 
@@ -136,7 +137,7 @@ def fetch(id):
         print 'fetching...'
         result = gds.fetch(id)
         print result
-        if len(result) == 0:
+        if result == None:
             return jsonify(code=404, message='Capital record not found'), 404
 
         return jsonify(result), 200

@@ -48,13 +48,11 @@ class GoogleDataStore:
         return result
 
     def fetch(self, id):
-        result = list()
-        
         # print 'getting query'
         query = self.ds.query(kind=self.kind)
 
         # print 'add filter', id
-        query.add_filter('id', '=', int(id) )
+        query.add_filter('id', '=', int(id))
 
         # print 'assembling list'
         for entity in list(query.fetch()):
@@ -62,13 +60,11 @@ class GoogleDataStore:
                 location = dict()
                 location['latitude'] = entity['location'].latitude
                 location['longitude'] = entity['location'].longitude
-                print location
                 entity['location'] = location
             return dict(entity)
 
-
         # print result
-        return result
+        return None
 
     def delete(self, id):
         result = list()
