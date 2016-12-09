@@ -1,6 +1,13 @@
 from datetime import datetime
 from google.cloud import datastore
 from google.cloud.datastore.helpers import GeoPoint
+#from google.appengine.ext import ndb
+
+#class ForteTeamChallenge1(ndb.Model):
+   # name = ndb.StringProperty()
+   # country = ndb.StringProperty()
+    #location = ndb.GeoPoint
+
 
 class GoogleDataStore:
     def __init__(self):
@@ -30,7 +37,7 @@ class GoogleDataStore:
         result = list()
 
         #print 'getting key'
-        key = self.ds.key(self.kind)
+        #key = self.ds.key(self.kind)
 
         #print 'getting query'
         query = self.ds.query(kind=self.kind)
@@ -44,6 +51,39 @@ class GoogleDataStore:
                 print location
                 entity['location'] = location
             result.append(dict(entity))
+
+        return result
+
+    def fetch_allunique(self):
+        result = []
+
+       #print 'getting key'
+        #key = self.ds.key(self.kind)
+
+        print 'getting query'
+  
+        query = self.ds.query(kind=self.kind)
+
+        print 'assembling list'
+
+        for entity in list(query.fetch()):
+            if 'location' in entity :
+                location = dict()
+                location['latitude'] = entity['location'].latitude
+                location['longitude'] = entity['location'].longitude
+                print location
+                entity['location'] = location
+            print 'before item def'
+            item = {}
+            print 'after item def'
+            item['name'] = entity['name']
+            item['country'] = entity['country']
+            item['location'] = entity['location']  
+            print 'after item' 
+            if item not in result:     
+                result.append(item)
+
+        print 'end'
 
         return result
 
