@@ -145,7 +145,7 @@ class GoogleDataStore:
         #print 'getting query'
   
         query = self.ds.query(kind=self.kind)
-
+        #query.order('name')
         #print 'assembling list'
 
         for entity in list(query.fetch()):
@@ -166,5 +166,5 @@ class GoogleDataStore:
                 result.append(item)
 
         #print 'end'
-
+        result.sort()
         return result
