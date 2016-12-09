@@ -30,7 +30,7 @@ class GoogleDataStore:
         result = list()
 
         #print 'getting key'
-        key = self.ds.key(self.kind)
+        #key = self.ds.key(self.kind)
 
         #print 'getting query'
         query = self.ds.query(kind=self.kind)
@@ -41,7 +41,6 @@ class GoogleDataStore:
                 location = dict()
                 location['latitude'] = entity['location'].latitude
                 location['longitude'] = entity['location'].longitude
-                print location
                 entity['location'] = location
             result.append(dict(entity))
 
@@ -136,29 +135,29 @@ class GoogleDataStore:
        #print 'getting key'
         #key = self.ds.key(self.kind)
 
-        print 'getting query'
+        #print 'getting query'
   
         query = self.ds.query(kind=self.kind)
 
-        print 'assembling list'
+        #print 'assembling list'
 
         for entity in list(query.fetch()):
             if 'location' in entity :
                 location = dict()
                 location['latitude'] = entity['location'].latitude
                 location['longitude'] = entity['location'].longitude
-                print location
                 entity['location'] = location
-            print 'before item def'
+            #print 'before item def'
             item = {}
-            print 'after item def'
+            #print 'after item def'
+            item['id'] = entity['id']
             item['name'] = entity['name']
             item['country'] = entity['country']
             item['location'] = entity['location']  
-            print 'after item' 
+            #print 'after item' 
             if item not in result:     
                 result.append(item)
 
-        print 'end'
+        #print 'end'
 
         return result

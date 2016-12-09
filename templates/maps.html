@@ -24,6 +24,7 @@
             var country{{ result.id }} = {lat: {{ result.latitude }}, lng: {{result.longitude}} };
             var marker = new google.maps.Marker({
               position: country{{ result.id }},
+              title: '{{result.name}}',
               map: map
             });
           {% endfor %}

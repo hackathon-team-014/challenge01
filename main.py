@@ -21,7 +21,7 @@ def map():
     # res.append(result)
             
     gds = google_datastore.GoogleDataStore()
-    all_entities = gds.fetch_all()
+    all_entities = gds.fetch_allunique()
 
     res = list()
     for entity in all_entities:
@@ -29,8 +29,9 @@ def map():
         e['id'] = entity['id']
         e['latitude'] = entity['location']['latitude']
         e['longitude'] = entity['location']['longitude']
+        e['name'] = entity['name']
         res.append(e)
-        print res
+        #print res
 
     return render_template("maps.html", comment= None, results = res)
 
