@@ -36,7 +36,7 @@ class GoogleDataStore:
         query = self.ds.query(kind=self.kind)
 
         #print 'assembling list'
-        for entity in list(query.fetch()):
+        for entity in list(query.fetch(20)):
             if 'location' in entity :
                 location = dict()
                 location['latitude'] = entity['location'].latitude
