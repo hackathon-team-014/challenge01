@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<title>Country and capitals of the world</title>
+<center><h1>Capitals of the world </h1></center>
+<HR>
+<table border="1">
+    <tr>
+        <th>Country</th>
+        <th>Capital</th>
+    </tr>
+    {% if results %}
+        {% for caps in results %}
+            <tr>
+                <td>{{ caps.country }}</td>
+                <td>{{ caps.name }}</td>
+            </tr>
+        {% endfor %}
+    {% endif %}
+</table>

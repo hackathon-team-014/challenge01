@@ -2,6 +2,7 @@ from flask import Flask, request
 from flask import jsonify
 from google.cloud import pubsub
 from flask.globals import current_app
+from flask import Blueprint, render_template, redirect, url_for
 
 import logging
 import json
@@ -9,6 +10,49 @@ import google_datastore
 import cloudstorage
 
 app = Flask(__name__)
+
+@app.route('/map', methods=['GET'])
+def map():
+    # result = dict()
+    # result['country'] = 'Brazil'
+    # result['latidude'] = 0
+    # result['longitude'] = 0
+    # res = list()
+    # res.append(result)
+            
+    gds = google_datastore.GoogleDataStore()
+    all_entities = gds.fetch_all()
+
+    res = list()
+    for entity in all_entities:
+        e = dict()
+        e['id'] = entity['id']
+        e['latitude'] = entity['location']['latitude']
+        e['longitude'] = entity['location']['longitude']
+        res.append(e)
+        print res
+
+    return render_template("maps.html", comment= None, results = res)
+
+
+@app.route('/capitals', methods=['GET'])
+def fetch_allUnique():
+    try:
+        #print 'Creating datastore facade'
+        gds = google_datastore.GoogleDataStore()
+
+        result = list()
+        print 'before gds.fetch_allUnique'
+        result = gds.fetch_allunique()
+        print 'after gds.fetch_allUnique'
+        #print result
+        j_result = jsonify(result)
+        #print j_result
+        return render_template('capitals.html', comment= None, results = result)
+    except Exception as e:
+        print e
+        return jsonify(code=500, message='Unexpected error'), 500
+
 
 @app.route('/', methods=['GET'])
 def welcome():
